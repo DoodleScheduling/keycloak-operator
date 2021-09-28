@@ -26,6 +26,14 @@ type KeycloakClientListerExpansion interface{}
 // KeycloakClientNamespaceLister.
 type KeycloakClientNamespaceListerExpansion interface{}
 
+// KeycloakIdentityProviderListerExpansion allows custom methods to be added to
+// KeycloakIdentityProviderLister.
+type KeycloakIdentityProviderListerExpansion interface{}
+
+// KeycloakIdentityProviderNamespaceListerExpansion allows custom methods to be added to
+// KeycloakIdentityProviderNamespaceLister.
+type KeycloakIdentityProviderNamespaceListerExpansion interface{}
+
 // KeycloakRealmListerExpansion allows custom methods to be added to
 // KeycloakRealmLister.
 type KeycloakRealmListerExpansion interface{}

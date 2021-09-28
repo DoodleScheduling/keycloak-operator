@@ -224,7 +224,7 @@ func (c *Client) FindUserByUsername(name, realm string) (*v1alpha1.KeycloakAPIUs
 	return result.(*v1alpha1.KeycloakAPIUser), nil
 }
 
-func (c *Client) CreateIdentityProvider(identityProvider *v1alpha1.KeycloakIdentityProvider, realmName string) (string, error) {
+func (c *Client) CreateIdentityProvider(identityProvider *v1alpha1.KeycloakAPIIdentityProvider, realmName string) (string, error) {
 	return c.create(identityProvider, fmt.Sprintf("realms/%s/identity-provider/instances", realmName), "identity provider")
 }
 
@@ -350,7 +350,7 @@ func (c *Client) GetUser(userID, realmName string) (*v1alpha1.KeycloakAPIUser, e
 	return ret, err
 }
 
-func (c *Client) GetIdentityProvider(alias string, realmName string) (*v1alpha1.KeycloakIdentityProvider, error) {
+func (c *Client) GetIdentityProvider(alias string, realmName string) (*v1alpha1.KeycloakAPIIdentityProvider, error) {
 	result, err := c.get(fmt.Sprintf("realms/%s/identity-provider/instances/%s", realmName, alias), "identity provider", func(body []byte) (T, error) {
 		provider := &v1alpha1.KeycloakIdentityProvider{}
 		err := json.Unmarshal(body, provider)
@@ -362,7 +362,7 @@ func (c *Client) GetIdentityProvider(alias string, realmName string) (*v1alpha1.
 	if result == nil {
 		return nil, nil
 	}
-	return result.(*v1alpha1.KeycloakIdentityProvider), err
+	return result.(*v1alpha1.KeycloakAPIIdentityProvider), err
 }
 
 func (c *Client) GetAuthenticatorConfig(configID, realmName string) (*v1alpha1.AuthenticatorConfig, error) {
@@ -429,7 +429,7 @@ func (c *Client) UpdateUser(specUser *v1alpha1.KeycloakAPIUser, realmName string
 	return c.update(specUser, fmt.Sprintf("realms/%s/users/%s", realmName, specUser.ID), "user")
 }
 
-func (c *Client) UpdateIdentityProvider(specIdentityProvider *v1alpha1.KeycloakIdentityProvider, realmName string) error {
+func (c *Client) UpdateIdentityProvider(specIdentityProvider *v1alpha1.KeycloakAPIIdentityProvider, realmName string) error {
 	return c.update(specIdentityProvider, fmt.Sprintf("realms/%s/identity-provider/instances/%s", realmName, specIdentityProvider.Alias), "identity provider")
 }
 
@@ -692,7 +692,7 @@ func (c *Client) ListUsers(realmName string) ([]*v1alpha1.KeycloakAPIUser, error
 	return result.([]*v1alpha1.KeycloakAPIUser), err
 }
 
-func (c *Client) ListIdentityProviders(realmName string) ([]*v1alpha1.KeycloakIdentityProvider, error) {
+func (c *Client) ListIdentityProviders(realmName string) ([]*v1alpha1.KeycloakAPIIdentityProvider, error) {
 	result, err := c.list(fmt.Sprintf("realms/%s/identity-provider/instances", realmName), "identity providers", func(body []byte) (T, error) {
 		var providers []*v1alpha1.KeycloakIdentityProvider
 		err := json.Unmarshal(body, &providers)
@@ -701,7 +701,7 @@ func (c *Client) ListIdentityProviders(realmName string) ([]*v1alpha1.KeycloakId
 	if err != nil {
 		return nil, err
 	}
-	return result.([]*v1alpha1.KeycloakIdentityProvider), err
+	return result.([]*v1alpha1.KeycloakAPIIdentityProvider), err
 }
 
 func (c *Client) ListUserClientRoles(realmName, clientID, userID string) ([]*v1alpha1.KeycloakUserRole, error) {
@@ -922,11 +922,11 @@ type KeycloakInterface interface {
 	DeleteUser(userID, realmName string) error
 	ListUsers(realmName string) ([]*v1alpha1.KeycloakAPIUser, error)
 
-	CreateIdentityProvider(identityProvider *v1alpha1.KeycloakIdentityProvider, realmName string) (string, error)
-	GetIdentityProvider(alias, realmName string) (*v1alpha1.KeycloakIdentityProvider, error)
-	UpdateIdentityProvider(specIdentityProvider *v1alpha1.KeycloakIdentityProvider, realmName string) error
+	CreateIdentityProvider(identityProvider *v1alpha1.KeycloakAPIIdentityProvider, realmName string) (string, error)
+	GetIdentityProvider(alias, realmName string) (*v1alpha1.KeycloakAPIIdentityProvider, error)
+	UpdateIdentityProvider(specIdentityProvider *v1alpha1.KeycloakAPIIdentityProvider, realmName string) error
 	DeleteIdentityProvider(alias, realmName string) error
-	ListIdentityProviders(realmName string) ([]*v1alpha1.KeycloakIdentityProvider, error)
+	ListIdentityProviders(realmName string) ([]*v1alpha1.KeycloakAPIIdentityProvider, error)
 
 	CreateUserClientRole(role *v1alpha1.KeycloakUserRole, realmName, clientID, userID string) (string, error)
 	ListUserClientRoles(realmName, clientID, userID string) ([]*v1alpha1.KeycloakUserRole, error)

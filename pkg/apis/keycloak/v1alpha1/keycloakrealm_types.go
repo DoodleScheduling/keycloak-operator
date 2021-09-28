@@ -49,7 +49,7 @@ type KeycloakAPIRealm struct {
 	Clients []*KeycloakAPIClient `json:"clients,omitempty"`
 	// A set of Identity Providers.
 	// +optional
-	IdentityProviders []*KeycloakIdentityProvider `json:"identityProviders,omitempty"`
+	IdentityProviders []*KeycloakAPIIdentityProvider `json:"identityProviders,omitempty"`
 	// A set of Event Listeners.
 	// +optional
 	EventsListeners []string `json:"eventsListeners,omitempty"`
@@ -413,45 +413,6 @@ type KeycloakClientScope struct {
 	// Protocol Mappers.
 	// +optional
 	ProtocolMappers []KeycloakProtocolMapper `json:"protocolMappers,omitempty"`
-}
-
-type KeycloakIdentityProvider struct {
-	// Identity Provider Alias.
-	// +optional
-	Alias string `json:"alias,omitempty"`
-	// Identity Provider Display Name.
-	// +optional
-	DisplayName string `json:"displayName,omitempty"`
-	// Identity Provider Internal ID.
-	// +optional
-	InternalID string `json:"internalId,omitempty"`
-	// Identity Provider ID.
-	// +optional
-	ProviderID string `json:"providerId,omitempty"`
-	// Identity Provider enabled flag.
-	// +optional
-	Enabled bool `json:"enabled,omitempty"`
-	// Identity Provider Trust Email.
-	// +optional
-	TrustEmail bool `json:"trustEmail,omitempty"`
-	// Identity Provider Store to Token.
-	// +optional
-	StoreToken bool `json:"storeToken,omitempty"`
-	// Adds Read Token role when creating this Identity Provider.
-	// +optional
-	AddReadTokenRoleOnCreate bool `json:"addReadTokenRoleOnCreate,omitempty"`
-	// Identity Provider First Broker Login Flow Alias.
-	// +optional
-	FirstBrokerLoginFlowAlias string `json:"firstBrokerLoginFlowAlias,omitempty"`
-	// Identity Provider Post Broker Login Flow Alias.
-	// +optional
-	PostBrokerLoginFlowAlias string `json:"postBrokerLoginFlowAlias,omitempty"`
-	// Identity Provider Link Only setting.
-	// +optional
-	LinkOnly bool `json:"linkOnly,omitempty"`
-	// Identity Provider config.
-	// +optional
-	Config map[string]string `json:"config,omitempty"`
 }
 
 type KeycloakUserRole struct {

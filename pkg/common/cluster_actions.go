@@ -26,6 +26,7 @@ type ActionRunner interface {
 	Update(obj runtime.Object) error
 	CreateRealm(obj *v1alpha1.KeycloakRealm) error
 	DeleteRealm(obj *v1alpha1.KeycloakRealm) error
+	UpdateRealm(obj *v1alpha1.KeycloakRealm) error
 	CreateClient(keycloakClient *v1alpha1.KeycloakClient, Realm string) error
 	DeleteClient(keycloakClient *v1alpha1.KeycloakClient, Realm string) error
 	UpdateClient(keycloakClient *v1alpha1.KeycloakClient, Realm string) error
@@ -122,6 +123,16 @@ func (i *ClusterActionRunner) Update(obj runtime.Object) error {
 
 // Create a new realm using the keycloak api
 func (i *ClusterActionRunner) CreateRealm(obj *v1alpha1.KeycloakRealm) error {
+	if i.keycloakClient == nil {
+		return errors.Errorf("cannot perform realm create when client is nil")
+	}
+
+	_, err := i.keycloakClient.CreateRealm(obj)
+	return err
+}
+
+// Update realm using the keycloak api (Note: This only updates the top level attributes)
+func (i *ClusterActionRunner) UpdateRealm(obj *v1alpha1.KeycloakRealm) error {
 	if i.keycloakClient == nil {
 		return errors.Errorf("cannot perform realm create when client is nil")
 	}
