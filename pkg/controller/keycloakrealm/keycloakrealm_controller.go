@@ -116,10 +116,6 @@ func (r *ReconcileKeycloakRealm) Reconcile(request reconcile.Request) (reconcile
 		return reconcile.Result{}, err
 	}
 
-	if instance.Spec.Unmanaged {
-		return reconcile.Result{Requeue: false}, r.manageSuccess(instance, instance.DeletionTimestamp != nil)
-	}
-
 	// If no selector is set we can't figure out which Keycloak instance this realm should
 	// be added to. Skip reconcile until a selector has been set.
 	if instance.Spec.InstanceSelector == nil {
@@ -139,10 +135,6 @@ func (r *ReconcileKeycloakRealm) Reconcile(request reconcile.Request) (reconcile
 	for _, keycloak := range keycloaks.Items {
 		// Get an authenticated keycloak api client for the instance
 		keycloakFactory := common.LocalConfigKeycloakFactory{}
-
-		if keycloak.Spec.Unmanaged {
-			return r.ManageError(instance, errors.Errorf("realms cannot be created for unmanaged keycloak instances"))
-		}
 
 		authenticated, err := keycloakFactory.AuthenticatedClient(keycloak, false)
 
