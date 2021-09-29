@@ -11,6 +11,10 @@ type KeycloakRealmSpec struct {
 	// It can then be used for targeting purposes.
 	// +optional
 	Unmanaged bool `json:"unmanaged,omitempty"`
+	// When set to true, the operator will reconcile the realm state.
+	// Attention you can not easily change realm settings via web ui anymore as the controller would overwrite these.
+	// +optional
+	ApplyUpdates bool `json:"applyUpdates,omitempty"`
 	// Selector for looking up Keycloak Custom Resources.
 	// +kubebuilder:validation:Required
 	InstanceSelector *metav1.LabelSelector `json:"instanceSelector,omitempty"`
@@ -184,6 +188,7 @@ type KeycloakAPIRealm struct {
 	// Access Token Lifespan For Implicit Flow
 	// +optional
 	AccessTokenLifespanForImplicitFlow *int32 `json:"accessTokenLifespanForImplicitFlow,omitempty"`
+
 	// Access Token Lifespan
 	// +optional
 	AccessTokenLifespan *int32 `json:"accessTokenLifespan,omitempty"`
@@ -191,6 +196,110 @@ type KeycloakAPIRealm struct {
 	// User Managed Access Allowed
 	// +optional
 	UserManagedAccessAllowed *bool `json:"userManagedAccessAllowed,omitempty"`
+
+	// BrowserSecurityHeaders
+	// +optional
+	BrowserSecurityHeaders map[string]string `json:"browserSecurityHeaders,omitempty"`
+
+	// DefaultSignatureAlgorithm
+	// +optional
+	DefaultSignatureAlgorithm string `json:"defaultSignatureAlgorithm,omitempty"`
+
+	// RevokeRefreshToken
+	// +optional
+	RevokeRefreshToken *bool `json:"revokeRefreshToken,omitempty"`
+
+	// RefreshTokenMaxReuse
+	// +optional
+	RefreshTokenMaxReuse *int32 `json:"refreshTokenMaxReuse,omitempty"`
+
+	// SSOSessionIdleTimeout
+	// +optional
+	SSOSessionIdleTimeout *int32 `json:"ssoSessionIdleTimeout,omitempty"`
+
+	// SSOSessionMaxLifespan
+	// +optional
+	SSOSessionMaxLifespan *int32 `json:"ssoSessionMaxLifespan,omitempty"`
+
+	// SSOSessionIdleTimeoutRememberMe
+	// +optional
+	SSOSessionIdleTimeoutRememberMe *int32 `json:"ssoSessionIdleTimeoutRememberMe,omitempty"`
+
+	// OfflineSessionIdleTimeout
+	// +optional
+	OfflineSessionIdleTimeout *int32 `json:"offlineSessionIdleTimeout,omitempty"`
+
+	// OfflineSessionMaxLifespanEnabled
+	// +optional
+	OfflineSessionMaxLifespanEnabled *bool `json:"offlineSessionMaxLifespanEnabled,omitempty"`
+
+	// OfflineSessionMaxLifespan
+	// +optional
+	OfflineSessionMaxLifespan *int32 `json:"offlineSessionMaxLifespan,omitempty"`
+
+	// ClientSessionIdleTimeout
+	// +optional
+	ClientSessionIdleTimeout *int32 `json:"clientSessionIdleTimeout,omitempty"`
+
+	// ClientSessionMaxLifespan
+	// +optional
+	ClientSessionMaxLifespan *int32 `json:"clientSessionMaxLifespan,omitempty"`
+
+	// ClientOfflineSessionIdleTimeout
+	// +optional
+	ClientOfflineSessionIdleTimeout *int32 `json:"clientOfflineSessionIdleTimeout,omitempty"`
+
+	// ClientOfflineSessionMaxLifespan
+	// +optional
+	ClientOfflineSessionMaxLifespan *int32 `json:"clientOfflineSessionMaxLifespan,omitempty"`
+
+	// ClientOfflineSessionMaxLifespan
+	// +optional
+	AccessCodeLifespan *int32 `json:"accessCodeLifespan,omitempty"`
+
+	// AccessCodeLifespanUserAction
+	// +optional
+	AccessCodeLifespanUserAction *int32 `json:"accessCodeLifespanUserAction,omitempty"`
+
+	// AccessCodeLifespanLogin
+	// +optional
+	AccessCodeLifespanLogin *int32 `json:"accessCodeLifespanLogin,omitempty"`
+
+	// ActionTokenGeneratedByAdminLifespan
+	// +optional
+	ActionTokenGeneratedByAdminLifespan *int32 `json:"actionTokenGeneratedByAdminLifespan,omitempty"`
+
+	// ActionTokenGeneratedByUserLifespan
+	// +optional
+	ActionTokenGeneratedByUserLifespan *int32 `json:"actionTokenGeneratedByUserLifespan,omitempty"`
+
+	// OAuth2DeviceCodeLifespan
+	// +optional
+	OAuth2DeviceCodeLifespan *int32 `json:"oauth2DeviceCodeLifespan,omitempty"`
+
+	// OAauth2DevicePollingInterval
+	// +optional
+	OAauth2DevicePollingInterval *int32 `json:"oauth2DevicePollingInterval,omitempty"`
+
+	// BrowserFlow
+	// +optional
+	BrowserFlow string `json:"browserFlow,omitempty"`
+
+	// RegistrationFlow
+	// +optional
+	RegistrationFlow string `json:"registrationFlow,omitempty"`
+
+	// DirectGrantFlow
+	// +optional
+	DirectGrantFlow string `json:"directGrantFlow,omitempty"`
+
+	// ResetCredentialsFlow
+	// +optional
+	ResetCredentialsFlow string `json:"resetCredentialsFlow,omitempty"`
+
+	// ClientAuthenticationFlow
+	// +optional
+	ClientAuthenticationFlow string `json:"clientAuthenticationFlow,omitempty"`
 }
 
 type RoleRepresentationArray []RoleRepresentation

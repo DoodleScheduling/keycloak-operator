@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -13,6 +14,9 @@ type KeycloakIdentityProviderSpec struct {
 	// Keycloak Client REST object.
 	// +kubebuilder:validation:Required
 	IdentityProvider *KeycloakAPIIdentityProvider `json:"identityProvider"`
+	// Secret reference.
+	// +optional
+	Secret *v1.LocalObjectReference `json:"secret,omitEmty"`
 }
 
 type KeycloakAPIIdentityProvider struct {

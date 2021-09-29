@@ -602,6 +602,98 @@ func (in *KeycloakAPIRealm) DeepCopyInto(out *KeycloakAPIRealm) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.BrowserSecurityHeaders != nil {
+		in, out := &in.BrowserSecurityHeaders, &out.BrowserSecurityHeaders
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
+	if in.RefreshTokenMaxReuse != nil {
+		in, out := &in.RefreshTokenMaxReuse, &out.RefreshTokenMaxReuse
+		*out = new(int32)
+		**out = **in
+	}
+	if in.SSOSessionIdleTimeout != nil {
+		in, out := &in.SSOSessionIdleTimeout, &out.SSOSessionIdleTimeout
+		*out = new(int32)
+		**out = **in
+	}
+	if in.SSOSessionMaxLifespan != nil {
+		in, out := &in.SSOSessionMaxLifespan, &out.SSOSessionMaxLifespan
+		*out = new(int32)
+		**out = **in
+	}
+	if in.SSOSessionIdleTimeoutRememberMe != nil {
+		in, out := &in.SSOSessionIdleTimeoutRememberMe, &out.SSOSessionIdleTimeoutRememberMe
+		*out = new(int32)
+		**out = **in
+	}
+	if in.OfflineSessionIdleTimeout != nil {
+		in, out := &in.OfflineSessionIdleTimeout, &out.OfflineSessionIdleTimeout
+		*out = new(int32)
+		**out = **in
+	}
+	if in.OfflineSessionMaxLifespan != nil {
+		in, out := &in.OfflineSessionMaxLifespan, &out.OfflineSessionMaxLifespan
+		*out = new(int32)
+		**out = **in
+	}
+	if in.ClientSessionIdleTimeout != nil {
+		in, out := &in.ClientSessionIdleTimeout, &out.ClientSessionIdleTimeout
+		*out = new(int32)
+		**out = **in
+	}
+	if in.ClientSessionMaxLifespan != nil {
+		in, out := &in.ClientSessionMaxLifespan, &out.ClientSessionMaxLifespan
+		*out = new(int32)
+		**out = **in
+	}
+	if in.ClientOfflineSessionIdleTimeout != nil {
+		in, out := &in.ClientOfflineSessionIdleTimeout, &out.ClientOfflineSessionIdleTimeout
+		*out = new(int32)
+		**out = **in
+	}
+	if in.ClientOfflineSessionMaxLifespan != nil {
+		in, out := &in.ClientOfflineSessionMaxLifespan, &out.ClientOfflineSessionMaxLifespan
+		*out = new(int32)
+		**out = **in
+	}
+	if in.AccessCodeLifespan != nil {
+		in, out := &in.AccessCodeLifespan, &out.AccessCodeLifespan
+		*out = new(int32)
+		**out = **in
+	}
+	if in.AccessCodeLifespanUserAction != nil {
+		in, out := &in.AccessCodeLifespanUserAction, &out.AccessCodeLifespanUserAction
+		*out = new(int32)
+		**out = **in
+	}
+	if in.AccessCodeLifespanLogin != nil {
+		in, out := &in.AccessCodeLifespanLogin, &out.AccessCodeLifespanLogin
+		*out = new(int32)
+		**out = **in
+	}
+	if in.ActionTokenGeneratedByAdminLifespan != nil {
+		in, out := &in.ActionTokenGeneratedByAdminLifespan, &out.ActionTokenGeneratedByAdminLifespan
+		*out = new(int32)
+		**out = **in
+	}
+	if in.ActionTokenGeneratedByUserLifespan != nil {
+		in, out := &in.ActionTokenGeneratedByUserLifespan, &out.ActionTokenGeneratedByUserLifespan
+		*out = new(int32)
+		**out = **in
+	}
+	if in.OAuth2DeviceCodeLifespan != nil {
+		in, out := &in.OAuth2DeviceCodeLifespan, &out.OAuth2DeviceCodeLifespan
+		*out = new(int32)
+		**out = **in
+	}
+	if in.OAauth2DevicePollingInterval != nil {
+		in, out := &in.OAauth2DevicePollingInterval, &out.OAauth2DevicePollingInterval
+		*out = new(int32)
+		**out = **in
+	}
 	return
 }
 
@@ -1192,6 +1284,11 @@ func (in *KeycloakIdentityProviderSpec) DeepCopyInto(out *KeycloakIdentityProvid
 		in, out := &in.IdentityProvider, &out.IdentityProvider
 		*out = new(KeycloakAPIIdentityProvider)
 		(*in).DeepCopyInto(*out)
+	}
+	if in.Secret != nil {
+		in, out := &in.Secret, &out.Secret
+		*out = new(v1.LocalObjectReference)
+		**out = **in
 	}
 	return
 }

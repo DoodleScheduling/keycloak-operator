@@ -23,10 +23,24 @@ func NewKeycloakRealmReconciler(keycloak kc.Keycloak) *KeycloakRealmReconciler {
 }
 
 func (i *KeycloakRealmReconciler) Reconcile(state *common.RealmState, cr *kc.KeycloakRealm) common.DesiredClusterState {
-	if cr.DeletionTimestamp == nil {
+	switch {
+	case cr.DeletionTimestamp != nil:
+		fmt.Printf("DELETE----------------------------")
+		return i.ReconcileRealmDelete(state, cr)
+	case state.Realm != nil && cr.Spec.ApplyUpdates == true:
+		fmt.Printf("UPDATE----------------------------")
+		return i.ReconcileRealmUpdate(state, cr)
+	default:
+		fmt.Printf("CRETAE---------------------------- %#v", state.Realm)
 		return i.ReconcileRealmCreate(state, cr)
 	}
-	return i.ReconcileRealmDelete(state, cr)
+}
+
+func (i *KeycloakRealmReconciler) ReconcileRealmUpdate(state *common.RealmState, cr *kc.KeycloakRealm) common.DesiredClusterState {
+	desired := i.ReconcileRealmCreate(state, cr)
+	desired.AddActions(i.getDesiredRealmClientScopeState(state, cr))
+
+	return desired
 }
 
 func (i *KeycloakRealmReconciler) ReconcileRealmCreate(state *common.RealmState, cr *kc.KeycloakRealm) common.DesiredClusterState {
@@ -36,7 +50,7 @@ func (i *KeycloakRealmReconciler) ReconcileRealmCreate(state *common.RealmState,
 	desired.AddAction(i.getDesiredRealmState(state, cr))
 
 	for _, user := range cr.Spec.Realm.Users {
-		desired.AddAction(i.getDesiredUserSate(state, cr, user))
+		desired.AddAction(i.getDesiredUserState(state, cr, user))
 	}
 
 	desired.AddAction(i.getBrowserRedirectorDesiredState(state, cr))
@@ -76,24 +90,28 @@ func (i *KeycloakRealmReconciler) getBrowserRedirectorDesiredState(state *common
 }
 
 func (i *KeycloakRealmReconciler) getDesiredRealmState(state *common.RealmState, cr *kc.KeycloakRealm) common.ClusterAction {
-	if cr.DeletionTimestamp != nil {
+	switch {
+	case cr.DeletionTimestamp != nil:
 		return &common.DeleteRealmAction{
 			Ref: cr,
 			Msg: fmt.Sprintf("removing realm %v/%v", cr.Namespace, cr.Spec.Realm.Realm),
 		}
-	}
-
-	if state.Realm == nil {
+	case state.Realm != nil && cr.Spec.ApplyUpdates == true:
+		return &common.UpdateRealmAction{
+			Ref: cr,
+			Msg: fmt.Sprintf("update realm %v/%v", cr.Namespace, cr.Spec.Realm.Realm),
+		}
+	case state.Realm == nil:
 		return &common.CreateRealmAction{
 			Ref: cr,
 			Msg: fmt.Sprintf("create realm %v/%v", cr.Namespace, cr.Spec.Realm.Realm),
 		}
+	default:
+		return nil
 	}
-
-	return nil
 }
 
-func (i *KeycloakRealmReconciler) getDesiredUserSate(state *common.RealmState, cr *kc.KeycloakRealm, user *kc.KeycloakAPIUser) common.ClusterAction {
+func (i *KeycloakRealmReconciler) getDesiredUserState(state *common.RealmState, cr *kc.KeycloakRealm, user *kc.KeycloakAPIUser) common.ClusterAction {
 	val, ok := state.RealmUserSecrets[user.UserName]
 	if !ok || val == nil {
 		return &common.GenericCreateAction{
@@ -103,4 +121,61 @@ func (i *KeycloakRealmReconciler) getDesiredUserSate(state *common.RealmState, c
 	}
 
 	return nil
+}
+
+func (i *KeycloakRealmReconciler) getDesiredRealmClientScopeState(state *common.RealmState, cr *kc.KeycloakRealm) []common.ClusterAction {
+	var actions []common.ClusterAction
+	var w []string
+
+OUTER_SPEC:
+	for _, specV := range cr.Spec.Realm.ClientScopes {
+		//store local copy to reference
+		p := specV
+		for _, stateV := range state.Realm.Spec.Realm.ClientScopes {
+			if stateV.Name != specV.Name {
+				continue
+			}
+
+			p.ID = stateV.ID
+			actions = append(actions, &common.UpdateClientScopeAction{
+				ClientScope: &p,
+				Realm:       cr.Spec.Realm.Realm,
+				Msg:         fmt.Sprintf("update client scope %v in realm %v/%v", specV.Name, cr.Namespace, cr.Spec.Realm.Realm),
+			})
+
+			w = append(w, specV.Name)
+
+			// If we have an existing resource update and go to the next in the specs
+			continue OUTER_SPEC
+		}
+
+		// resource does not exist yet, create it
+		actions = append(actions, &common.CreateClientScopeAction{
+			ClientScope: &p,
+			Realm:       cr.Spec.Realm.Realm,
+			Msg:         fmt.Sprintf("create client scope %v in realm %v/%v", specV.Name, cr.Namespace, cr.Spec.Realm.Realm),
+		})
+
+		w = append(w, specV.Name)
+	}
+
+OUTER_STATE:
+	for _, stateV := range state.Realm.Spec.Realm.ClientScopes {
+		//store local copy to reference
+		p := stateV
+		for _, name := range w {
+			if stateV.Name == name {
+				continue OUTER_STATE
+			}
+		}
+
+		// No create or update action found, removing resource
+		actions = append(actions, &common.DeleteClientScopeAction{
+			ClientScope: &p,
+			Realm:       cr.Spec.Realm.Realm,
+			Msg:         fmt.Sprintf("delete client scope %v in realm %v/%v", stateV.Name, cr.Namespace, cr.Spec.Realm.Realm),
+		})
+	}
+
+	return actions
 }

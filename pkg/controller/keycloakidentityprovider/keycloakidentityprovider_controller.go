@@ -109,8 +109,6 @@ func (r *ReconcileKeycloakIdentityProvider) Reconcile(request reconcile.Request)
 		return reconcile.Result{}, err
 	}
 
-	r.adjustCrDefaults(instance)
-
 	// The client may be applicable to multiple keycloak instances,
 	// process all of them
 	realms, err := common.GetMatchingRealms(r.context, r.client, instance.Spec.RealmSelector)
@@ -135,9 +133,9 @@ func (r *ReconcileKeycloakIdentityProvider) Reconcile(request reconcile.Request)
 
 			// Compute the current state of the realm
 			log.Info(fmt.Sprintf("got authenticated client for keycloak at %v", authenticated.Endpoint()))
-			clientState := common.NewClientState(r.context, realm.DeepCopy())
+			identityProviderState := common.NewIdentityProviderState(r.context, realm.DeepCopy())
 
-			log.Info(fmt.Sprintf("read client state for keycloak %v/%v, realm %v/%v, client %v/%v",
+			log.Info(fmt.Sprintf("read identity provider state for keycloak %v/%v, realm %v/%v, client %v/%v",
 				keycloak.Namespace,
 				keycloak.Name,
 				realm.Namespace,
@@ -145,7 +143,7 @@ func (r *ReconcileKeycloakIdentityProvider) Reconcile(request reconcile.Request)
 				instance.Namespace,
 				instance.Name))
 
-			err = clientState.Read(r.context, instance, authenticated, r.client)
+			err = identityProviderState.Read(r.context, instance, authenticated, r.client)
 			if err != nil {
 				return r.ManageError(instance, err)
 			}
@@ -153,7 +151,7 @@ func (r *ReconcileKeycloakIdentityProvider) Reconcile(request reconcile.Request)
 			// Figure out the actions to keep the realms up to date with
 			// the desired state
 			reconciler := NewKeycloakIdentityProviderReconciler(keycloak)
-			desiredState := reconciler.Reconcile(clientState, instance)
+			desiredState := reconciler.Reconcile(identityProviderState, instance)
 			actionRunner := common.NewClusterAndKeycloakActionRunner(r.context, r.client, r.scheme, instance, authenticated)
 
 			// Run all actions to keep the realms updated
@@ -165,16 +163,6 @@ func (r *ReconcileKeycloakIdentityProvider) Reconcile(request reconcile.Request)
 	}
 
 	return reconcile.Result{Requeue: false}, r.manageSuccess(instance, instance.DeletionTimestamp != nil)
-}
-
-// Fills the CR with default values. Nils are not acceptable for Kubernetes.
-func (r *ReconcileKeycloakIdentityProvider) adjustCrDefaults(cr *kc.KeycloakIdentityProvider) {
-	if cr.Spec.Client.Attributes == nil {
-		cr.Spec.Client.Attributes = make(map[string]string)
-	}
-	if cr.Spec.Client.Access == nil {
-		cr.Spec.Client.Access = make(map[string]bool)
-	}
 }
 
 func (r *ReconcileKeycloakIdentityProvider) manageSuccess(client *kc.KeycloakIdentityProvider, deleted bool) error {
@@ -204,9 +192,9 @@ func (r *ReconcileKeycloakIdentityProvider) manageSuccess(client *kc.KeycloakIde
 	// Resource created and finalizer does not exist: add finalizer
 	if !deleted && !finalizerExists {
 		client.Finalizers = append(client.Finalizers, ClientFinalizer)
-		log.Info(fmt.Sprintf("added finalizer to keycloak client %v/%v",
+		log.Info(fmt.Sprintf("added finalizer to keycloak identity provider %v/%v",
 			client.Namespace,
-			client.Spec.Client.ClientID))
+			client.Spec.IdentityProvider.InternalID))
 
 		return r.client.Update(r.context, client)
 	}
@@ -215,9 +203,9 @@ func (r *ReconcileKeycloakIdentityProvider) manageSuccess(client *kc.KeycloakIde
 	newFinalizers := []string{}
 	for _, finalizer := range client.Finalizers {
 		if finalizer == ClientFinalizer {
-			log.Info(fmt.Sprintf("removed finalizer from keycloak client %v/%v",
+			log.Info(fmt.Sprintf("removed finalizer from keycloak identity provider %v/%v",
 				client.Namespace,
-				client.Spec.Client.ClientID))
+				client.Spec.IdentityProvider.InternalID))
 
 			continue
 		}

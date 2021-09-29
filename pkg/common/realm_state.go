@@ -32,6 +32,15 @@ func (i *RealmState) Read(cr *kc.KeycloakRealm, realmClient KeycloakInterface, c
 	}
 
 	i.Realm = realm
+
+	// Get the state of the client scopes
+	clientScopes, err := realmClient.ListAvailableClientScopes(cr.Spec.Realm.Realm)
+	if err != nil {
+		return err
+	}
+
+	i.Realm.Spec.Realm.ClientScopes = clientScopes
+
 	if realm == nil || len(cr.Spec.Realm.Users) == 0 {
 		return nil
 	}

@@ -41,6 +41,12 @@ type ActionRunner interface {
 	DeleteClientDefaultClientScope(keycloakClient *v1alpha1.KeycloakClient, clientScope *v1alpha1.KeycloakClientScope, realm string) error
 	UpdateClientOptionalClientScope(keycloakClient *v1alpha1.KeycloakClient, clientScope *v1alpha1.KeycloakClientScope, realm string) error
 	DeleteClientOptionalClientScope(keycloakClient *v1alpha1.KeycloakClient, clientScope *v1alpha1.KeycloakClientScope, realm string) error
+	CreateClientScope(clientScope *v1alpha1.KeycloakClientScope, realm string) error
+	UpdateClientScope(clientScope *v1alpha1.KeycloakClientScope, realm string) error
+	DeleteClientScope(clientScope *v1alpha1.KeycloakClientScope, realm string) error
+	CreateIdentityProvider(clientScope *v1alpha1.KeycloakIdentityProvider, realm string) error
+	UpdateIdentityProvider(clientScope *v1alpha1.KeycloakIdentityProvider, realm string) error
+	DeleteIdentityProvider(clientScope *v1alpha1.KeycloakIdentityProvider, realm string) error
 	CreateUser(obj *v1alpha1.KeycloakUser, realm string) error
 	UpdateUser(obj *v1alpha1.KeycloakUser, realm string) error
 	DeleteUser(id, realm string) error
@@ -137,8 +143,7 @@ func (i *ClusterActionRunner) UpdateRealm(obj *v1alpha1.KeycloakRealm) error {
 		return errors.Errorf("cannot perform realm create when client is nil")
 	}
 
-	_, err := i.keycloakClient.CreateRealm(obj)
-	return err
+	return i.keycloakClient.UpdateRealm(obj)
 }
 
 func (i *ClusterActionRunner) CreateClient(obj *v1alpha1.KeycloakClient, realm string) error {
@@ -240,6 +245,59 @@ func (i *ClusterActionRunner) DeleteClientClientScopeMappings(keycloakClient *v1
 		return errors.Errorf("cannot perform client client scope delete when client is nil")
 	}
 	return i.keycloakClient.DeleteClientClientScopeMappings(keycloakClient.Spec.Client, mappings, realm)
+}
+
+func (i *ClusterActionRunner) CreateClientScope(clientScope *v1alpha1.KeycloakClientScope, realm string) error {
+	if i.keycloakClient == nil {
+		return errors.Errorf("cannot perform client client scope create when client is nil")
+	}
+
+	return i.keycloakClient.CreateClientScope(clientScope, realm)
+}
+
+func (i *ClusterActionRunner) DeleteClientScope(clientScope *v1alpha1.KeycloakClientScope, realm string) error {
+	if i.keycloakClient == nil {
+		return errors.Errorf("cannot perform client default client scope delete when client is nil")
+	}
+	return i.keycloakClient.DeleteClientScope(clientScope, realm)
+}
+
+func (i *ClusterActionRunner) UpdateClientScope(clientScope *v1alpha1.KeycloakClientScope, realm string) error {
+	if i.keycloakClient == nil {
+		return errors.Errorf("cannot perform client default client scope create when client is nil")
+	}
+	return i.keycloakClient.UpdateClientScope(clientScope, realm)
+}
+
+func (i *ClusterActionRunner) CreateIdentityProvider(identityProvider *v1alpha1.KeycloakIdentityProvider, realm string) error {
+	if i.keycloakClient == nil {
+		return errors.Errorf("cannot perform client client scope create when client is nil")
+	}
+
+	uid, err := i.keycloakClient.CreateIdentityProvider(identityProvider.Spec.IdentityProvider, realm)
+
+	if err != nil {
+		return err
+	}
+
+	identityProvider.Spec.IdentityProvider.InternalID = uid
+
+	return i.client.Update(i.context, identityProvider)
+
+}
+
+func (i *ClusterActionRunner) DeleteIdentityProvider(identityProvider *v1alpha1.KeycloakIdentityProvider, realm string) error {
+	if i.keycloakClient == nil {
+		return errors.Errorf("cannot perform client default client scope delete when client is nil")
+	}
+	return i.keycloakClient.DeleteIdentityProvider(identityProvider.Spec.IdentityProvider.InternalID, realm)
+}
+
+func (i *ClusterActionRunner) UpdateIdentityProvider(identityProvider *v1alpha1.KeycloakIdentityProvider, realm string) error {
+	if i.keycloakClient == nil {
+		return errors.Errorf("cannot perform client default client scope create when client is nil")
+	}
+	return i.keycloakClient.UpdateIdentityProvider(identityProvider.Spec.IdentityProvider, realm)
 }
 
 // Delete a realm using the keycloak api
@@ -410,6 +468,11 @@ type CreateRealmAction struct {
 	Msg string
 }
 
+type UpdateRealmAction struct {
+	Ref *v1alpha1.KeycloakRealm
+	Msg string
+}
+
 type CreateClientAction struct {
 	Ref   *v1alpha1.KeycloakClient
 	Msg   string
@@ -511,6 +574,42 @@ type DeleteClientOptionalClientScopeAction struct {
 	Realm       string
 }
 
+type CreateClientScopeAction struct {
+	ClientScope *v1alpha1.KeycloakClientScope
+	Msg         string
+	Realm       string
+}
+
+type DeleteClientScopeAction struct {
+	ClientScope *v1alpha1.KeycloakClientScope
+	Msg         string
+	Realm       string
+}
+
+type UpdateClientScopeAction struct {
+	ClientScope *v1alpha1.KeycloakClientScope
+	Msg         string
+	Realm       string
+}
+
+type CreateIdentityProviderAction struct {
+	Ref   *v1alpha1.KeycloakIdentityProvider
+	Msg   string
+	Realm string
+}
+
+type DeleteIdentityProviderAction struct {
+	Ref   *v1alpha1.KeycloakIdentityProvider
+	Msg   string
+	Realm string
+}
+
+type UpdateIdentityProviderAction struct {
+	Ref   *v1alpha1.KeycloakIdentityProvider
+	Msg   string
+	Realm string
+}
+
 type ConfigureRealmAction struct {
 	Ref *v1alpha1.KeycloakRealm
 	Msg string
@@ -580,6 +679,10 @@ func (i CreateRealmAction) Run(runner ActionRunner) (string, error) {
 	return i.Msg, runner.CreateRealm(i.Ref)
 }
 
+func (i UpdateRealmAction) Run(runner ActionRunner) (string, error) {
+	return i.Msg, runner.UpdateRealm(i.Ref)
+}
+
 func (i CreateClientAction) Run(runner ActionRunner) (string, error) {
 	return i.Msg, runner.CreateClient(i.Ref, i.Realm)
 }
@@ -630,6 +733,30 @@ func (i UpdateClientOptionalClientScopeAction) Run(runner ActionRunner) (string,
 
 func (i DeleteClientOptionalClientScopeAction) Run(runner ActionRunner) (string, error) {
 	return i.Msg, runner.DeleteClientOptionalClientScope(i.Ref, i.ClientScope, i.Realm)
+}
+
+func (i CreateClientScopeAction) Run(runner ActionRunner) (string, error) {
+	return i.Msg, runner.CreateClientScope(i.ClientScope, i.Realm)
+}
+
+func (i UpdateClientScopeAction) Run(runner ActionRunner) (string, error) {
+	return i.Msg, runner.UpdateClientScope(i.ClientScope, i.Realm)
+}
+
+func (i DeleteClientScopeAction) Run(runner ActionRunner) (string, error) {
+	return i.Msg, runner.DeleteClientScope(i.ClientScope, i.Realm)
+}
+
+func (i CreateIdentityProviderAction) Run(runner ActionRunner) (string, error) {
+	return i.Msg, runner.CreateIdentityProvider(i.Ref, i.Realm)
+}
+
+func (i UpdateIdentityProviderAction) Run(runner ActionRunner) (string, error) {
+	return i.Msg, runner.UpdateIdentityProvider(i.Ref, i.Realm)
+}
+
+func (i DeleteIdentityProviderAction) Run(runner ActionRunner) (string, error) {
+	return i.Msg, runner.DeleteIdentityProvider(i.Ref, i.Realm)
 }
 
 func (i DeleteRealmAction) Run(runner ActionRunner) (string, error) {

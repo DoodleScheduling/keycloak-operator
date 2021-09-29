@@ -31,6 +31,11 @@ spec:
           spec:
             description: KeycloakRealmSpec defines the desired state of KeycloakRealm.
             properties:
+              applyUpdates:
+                description: When set to true, the operator will reconcile the realm
+                  state. Attention you can not easily change realm settings via web
+                  ui anymore as the controller would overwrite these.
+                type: boolean
               instanceSelector:
                 description: Selector for looking up Keycloak Custom Resources.
                 properties:
@@ -78,6 +83,18 @@ spec:
               realm:
                 description: Keycloak Realm REST object.
                 properties:
+                  accessCodeLifespan:
+                    description: ClientOfflineSessionMaxLifespan
+                    format: int32
+                    type: integer
+                  accessCodeLifespanLogin:
+                    description: AccessCodeLifespanLogin
+                    format: int32
+                    type: integer
+                  accessCodeLifespanUserAction:
+                    description: AccessCodeLifespanUserAction
+                    format: int32
+                    type: integer
                   accessTokenLifespan:
                     description: Access Token Lifespan
                     format: int32
@@ -89,6 +106,14 @@ spec:
                   accountTheme:
                     description: Account Theme
                     type: string
+                  actionTokenGeneratedByAdminLifespan:
+                    description: ActionTokenGeneratedByAdminLifespan
+                    format: int32
+                    type: integer
+                  actionTokenGeneratedByUserLifespan:
+                    description: ActionTokenGeneratedByUserLifespan
+                    format: int32
+                    type: integer
                   adminEventsDetailsEnabled:
                     description: 'Enable admin events details TODO: change to values
                       and use kubebuilder default annotation once supported'
@@ -175,9 +200,22 @@ spec:
                       - alias
                       type: object
                     type: array
+                  browserSecurityHeaders:
+                    additionalProperties:
+                      type: string
+                    description: BrowserSecurityHeaders
+                    type: object
                   bruteForceProtected:
                     description: Brute Force Detection
                     type: boolean
+                  clientOfflineSessionIdleTimeout:
+                    description: ClientOfflineSessionIdleTimeout
+                    format: int32
+                    type: integer
+                  clientOfflineSessionMaxLifespan:
+                    description: ClientOfflineSessionMaxLifespan
+                    format: int32
+                    type: integer
                   clientScopeMappings:
                     additionalProperties:
                       items:
@@ -248,6 +286,14 @@ spec:
                           type: array
                       type: object
                     type: array
+                  clientSessionIdleTimeout:
+                    description: ClientSessionIdleTimeout
+                    format: int32
+                    type: integer
+                  clientSessionMaxLifespan:
+                    description: ClientSessionMaxLifespan
+                    format: int32
+                    type: integer
                   clients:
                     description: A set of Keycloak Clients.
                     items:
@@ -829,6 +875,9 @@ spec:
                   defaultLocale:
                     description: Default Locale
                     type: string
+                  defaultSignatureAlgorithm:
+                    description: DefaultSignatureAlgorithm
+                    type: string
                   displayName:
                     description: Realm display name.
                     type: string
@@ -933,6 +982,25 @@ spec:
                     description: Minimum Quick Login Wait
                     format: int32
                     type: integer
+                  oauth2DeviceCodeLifespan:
+                    description: OAuth2DeviceCodeLifespan
+                    format: int32
+                    type: integer
+                  oauth2DevicePollingInterval:
+                    description: OAauth2DevicePollingInterval
+                    format: int32
+                    type: integer
+                  offlineSessionIdleTimeout:
+                    description: OfflineSessionIdleTimeout
+                    format: int32
+                    type: integer
+                  offlineSessionMaxLifespan:
+                    description: OfflineSessionMaxLifespan
+                    format: int32
+                    type: integer
+                  offlineSessionMaxLifespanEnabled:
+                    description: OfflineSessionMaxLifespanEnabled
+                    type: boolean
                   passwordPolicy:
                     description: Realm Password Policy
                     type: string
@@ -946,6 +1014,10 @@ spec:
                   realm:
                     description: Realm name.
                     type: string
+                  refreshTokenMaxReuse:
+                    description: RefreshTokenMaxReuse
+                    format: int32
+                    type: integer
                   registrationAllowed:
                     description: User registration
                     type: boolean
@@ -957,6 +1029,9 @@ spec:
                     type: boolean
                   resetPasswordAllowed:
                     description: Forgot password
+                    type: boolean
+                  revokeRefreshToken:
+                    description: RevokeRefreshToken
                     type: boolean
                   roles:
                     description: Roles
@@ -1093,6 +1168,18 @@ spec:
                   sslRequired:
                     description: Require SSL
                     type: string
+                  ssoSessionIdleTimeout:
+                    description: SSOSessionIdleTimeout
+                    format: int32
+                    type: integer
+                  ssoSessionIdleTimeoutRememberMe:
+                    description: SSOSessionIdleTimeoutRememberMe
+                    format: int32
+                    type: integer
+                  ssoSessionMaxLifespan:
+                    description: SSOSessionMaxLifespan
+                    format: int32
+                    type: integer
                   supportedLocales:
                     description: Supported Locales
                     items:

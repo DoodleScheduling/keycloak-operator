@@ -352,7 +352,7 @@ func (c *Client) GetUser(userID, realmName string) (*v1alpha1.KeycloakAPIUser, e
 
 func (c *Client) GetIdentityProvider(alias string, realmName string) (*v1alpha1.KeycloakAPIIdentityProvider, error) {
 	result, err := c.get(fmt.Sprintf("realms/%s/identity-provider/instances/%s", realmName, alias), "identity provider", func(body []byte) (T, error) {
-		provider := &v1alpha1.KeycloakIdentityProvider{}
+		provider := &v1alpha1.KeycloakAPIIdentityProvider{}
 		err := json.Unmarshal(body, provider)
 		return provider, err
 	})
@@ -414,7 +414,7 @@ func (c *Client) update(obj T, resourcePath, resourceName string) error {
 }
 
 func (c *Client) UpdateRealm(realm *v1alpha1.KeycloakRealm) error {
-	return c.update(realm, fmt.Sprintf("realms/%s", realm.Spec.Realm.ID), "realm")
+	return c.update(realm.Spec.Realm, fmt.Sprintf("realms/%s", realm.Spec.Realm.ID), "realm")
 }
 
 func (c *Client) UpdateClient(specClient *v1alpha1.KeycloakAPIClient, realmName string) error {
@@ -443,6 +443,19 @@ func (c *Client) UpdateClientDefaultClientScope(specClient *v1alpha1.KeycloakAPI
 
 func (c *Client) UpdateClientOptionalClientScope(specClient *v1alpha1.KeycloakAPIClient, clientScope *v1alpha1.KeycloakClientScope, realmName string) error {
 	return c.update(clientScope, fmt.Sprintf("realms/%s/clients/%s/optional-client-scopes/%s", realmName, specClient.ID, clientScope.ID), "client optional client scope")
+}
+
+func (c *Client) CreateClientScope(clientScope *v1alpha1.KeycloakClientScope, realmName string) error {
+	_, err := c.create(clientScope, fmt.Sprintf("realms/%s/client-scopes", realmName), "clientScope")
+	return err
+}
+
+func (c *Client) UpdateClientScope(clientScope *v1alpha1.KeycloakClientScope, realmName string) error {
+	return c.update(clientScope, fmt.Sprintf("realms/%s/client-scopes/%s", realmName, clientScope.ID), "clientScope")
+}
+
+func (c *Client) DeleteClientScope(clientScope *v1alpha1.KeycloakClientScope, realmName string) error {
+	return c.delete(fmt.Sprintf("realms/%s/client-scopes/%s", realmName, clientScope.ID), "clientScope", clientScope)
 }
 
 // Generic delete function for deleting Keycloak resources
@@ -909,6 +922,9 @@ type KeycloakInterface interface {
 	DeleteClientDefaultClientScope(specClient *v1alpha1.KeycloakAPIClient, clientScope *v1alpha1.KeycloakClientScope, realmName string) error
 	UpdateClientOptionalClientScope(specClient *v1alpha1.KeycloakAPIClient, clientScope *v1alpha1.KeycloakClientScope, realmName string) error
 	DeleteClientOptionalClientScope(specClient *v1alpha1.KeycloakAPIClient, clientScope *v1alpha1.KeycloakClientScope, realmName string) error
+	CreateClientScope(clientScope *v1alpha1.KeycloakClientScope, realmName string) error
+	UpdateClientScope(clientScope *v1alpha1.KeycloakClientScope, realmName string) error
+	DeleteClientScope(clientScope *v1alpha1.KeycloakClientScope, realmName string) error
 
 	CreateUser(user *v1alpha1.KeycloakAPIUser, realmName string) (string, error)
 	CreateFederatedIdentity(fid v1alpha1.FederatedIdentity, userID string, realmName string) (string, error)
