@@ -25,13 +25,10 @@ func NewKeycloakRealmReconciler(keycloak kc.Keycloak) *KeycloakRealmReconciler {
 func (i *KeycloakRealmReconciler) Reconcile(state *common.RealmState, cr *kc.KeycloakRealm) common.DesiredClusterState {
 	switch {
 	case cr.DeletionTimestamp != nil:
-		fmt.Printf("DELETE----------------------------")
 		return i.ReconcileRealmDelete(state, cr)
 	case state.Realm != nil && cr.Spec.ApplyUpdates == true:
-		fmt.Printf("UPDATE----------------------------")
 		return i.ReconcileRealmUpdate(state, cr)
 	default:
-		fmt.Printf("CRETAE---------------------------- %#v", state.Realm)
 		return i.ReconcileRealmCreate(state, cr)
 	}
 }
