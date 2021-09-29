@@ -9,6 +9,7 @@ import (
 
 	"k8s.io/client-go/tools/record"
 
+	"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	kubeerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -121,6 +122,13 @@ func (r *ReconcileKeycloakUser) Reconcile(request reconcile.Request) (reconcile.
 		}
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
+	}
+
+	// Abort reconciliation earily if resource is suspended
+	if instance.Spec.Suspend == true {
+		instance.Status.Message = ""
+		instance.Status.Phase = v1alpha1.PhaseSuspended
+		return reconcile.Result{}, nil
 	}
 
 	// If no selector is set we can't figure out which realm instance this user should

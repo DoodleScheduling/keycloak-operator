@@ -128,6 +128,9 @@ spec:
                       TODO: Add other useful fields. apiVersion, kind, uid?'
                     type: string
                 type: object
+              suspend:
+                description: Suspend reconciliation
+                type: boolean
             required:
             - identityProvider
             - realmSelector

@@ -7,6 +7,9 @@ import (
 // KeycloakRealmSpec defines the desired state of KeycloakRealm.
 // +k8s:openapi-gen=true
 type KeycloakRealmSpec struct {
+	// Suspend reconciliation
+	// +optional
+	Suspend bool `json:"suspend,omitempty"`
 	// When set to true, this KeycloakRealm will be marked as unmanaged and not be managed by this operator.
 	// It can then be used for targeting purposes.
 	// +optional

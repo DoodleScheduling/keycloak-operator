@@ -109,6 +109,14 @@ func (r *ReconcileKeycloakClient) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{}, err
 	}
 
+	// Abort reconciliation earily if resource is suspended
+	if instance.Spec.Suspend == true {
+		instance.Status.Ready = false
+		instance.Status.Message = ""
+		instance.Status.Phase = v1alpha1.PhaseSuspended
+		return reconcile.Result{}, nil
+	}
+
 	r.adjustCrDefaults(instance)
 
 	// The client may be applicable to multiple keycloak instances,

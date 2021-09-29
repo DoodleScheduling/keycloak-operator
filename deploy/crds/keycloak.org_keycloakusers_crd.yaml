@@ -75,6 +75,9 @@ spec:
                       are ANDed.
                     type: object
                 type: object
+              suspend:
+                description: Suspend reconciliation
+                type: boolean
               user:
                 description: Keycloak User REST object.
                 properties:

@@ -114,6 +114,14 @@ func (r *ReconcileKeycloakRealm) Reconcile(request reconcile.Request) (reconcile
 		return reconcile.Result{}, err
 	}
 
+	// Abort reconciliation earily if resource is suspended
+	if instance.Spec.Suspend == true {
+		instance.Status.Ready = false
+		instance.Status.Message = ""
+		instance.Status.Phase = v1alpha1.PhaseSuspended
+		return reconcile.Result{}, nil
+	}
+
 	// If no selector is set we can't figure out which Keycloak instance this realm should
 	// be added to. Skip reconcile until a selector has been set.
 	if instance.Spec.InstanceSelector == nil {

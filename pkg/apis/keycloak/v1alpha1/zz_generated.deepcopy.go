@@ -609,6 +609,11 @@ func (in *KeycloakAPIRealm) DeepCopyInto(out *KeycloakAPIRealm) {
 			(*out)[key] = val
 		}
 	}
+	if in.RevokeRefreshToken != nil {
+		in, out := &in.RevokeRefreshToken, &out.RevokeRefreshToken
+		*out = new(bool)
+		**out = **in
+	}
 	if in.RefreshTokenMaxReuse != nil {
 		in, out := &in.RefreshTokenMaxReuse, &out.RefreshTokenMaxReuse
 		*out = new(int32)
@@ -632,6 +637,11 @@ func (in *KeycloakAPIRealm) DeepCopyInto(out *KeycloakAPIRealm) {
 	if in.OfflineSessionIdleTimeout != nil {
 		in, out := &in.OfflineSessionIdleTimeout, &out.OfflineSessionIdleTimeout
 		*out = new(int32)
+		**out = **in
+	}
+	if in.OfflineSessionMaxLifespanEnabled != nil {
+		in, out := &in.OfflineSessionMaxLifespanEnabled, &out.OfflineSessionMaxLifespanEnabled
+		*out = new(bool)
 		**out = **in
 	}
 	if in.OfflineSessionMaxLifespan != nil {

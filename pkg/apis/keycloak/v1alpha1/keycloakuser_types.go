@@ -16,6 +16,9 @@ var (
 // KeycloakUserSpec defines the desired state of KeycloakUser.
 // +k8s:openapi-gen=true
 type KeycloakUserSpec struct {
+	// Suspend reconciliation
+	// +optional
+	Suspend bool `json:"suspend,omitempty"`
 	// Selector for looking up KeycloakRealm Custom Resources.
 	// +kubebuilder:validation:Required
 	RealmSelector *metav1.LabelSelector `json:"realmSelector,omitempty"`

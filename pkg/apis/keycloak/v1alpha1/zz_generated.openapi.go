@@ -320,6 +320,13 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakClientSpec(ref common.ReferenceCa
 				Description: "KeycloakClientSpec defines the desired state of KeycloakClient.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
+					"suspend": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Suspend reconciliation",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
 					"realmSelector": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Selector for looking up KeycloakRealm Custom Resources.",
@@ -484,6 +491,13 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakIdentityProviderSpec(ref common.R
 				Description: "KeycloakIdentityProviderSpec defines the desired state of KeycloakIdentityProvider.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
+					"suspend": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Suspend reconciliation",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
 					"realmSelector": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Selector for looking up KeycloakRealm Custom Resources.",
@@ -626,6 +640,13 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakRealmSpec(ref common.ReferenceCal
 				Description: "KeycloakRealmSpec defines the desired state of KeycloakRealm.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
+					"suspend": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Suspend reconciliation",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
 					"unmanaged": {
 						SchemaProps: spec.SchemaProps{
 							Description: "When set to true, this KeycloakRealm will be marked as unmanaged and not be managed by this operator. It can then be used for targeting purposes.",
@@ -1012,6 +1033,13 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakUserSpec(ref common.ReferenceCall
 				Description: "KeycloakUserSpec defines the desired state of KeycloakUser.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
+					"suspend": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Suspend reconciliation",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
 					"realmSelector": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Selector for looking up KeycloakRealm Custom Resources.",

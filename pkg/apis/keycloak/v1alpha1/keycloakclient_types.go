@@ -8,6 +8,9 @@ import (
 // KeycloakClientSpec defines the desired state of KeycloakClient.
 // +k8s:openapi-gen=true
 type KeycloakClientSpec struct {
+	// Suspend reconciliation
+	// +optional
+	Suspend bool `json:"suspend,omitempty"`
 	// Selector for looking up KeycloakRealm Custom Resources.
 	// +kubebuilder:validation:Required
 	RealmSelector *metav1.LabelSelector `json:"realmSelector"`

@@ -200,6 +200,9 @@ spec:
                       - alias
                       type: object
                     type: array
+                  browserFlow:
+                    description: BrowserFlow
+                    type: string
                   browserSecurityHeaders:
                     additionalProperties:
                       type: string
@@ -208,6 +211,9 @@ spec:
                   bruteForceProtected:
                     description: Brute Force Detection
                     type: boolean
+                  clientAuthenticationFlow:
+                    description: ClientAuthenticationFlow
+                    type: string
                   clientOfflineSessionIdleTimeout:
                     description: ClientOfflineSessionIdleTimeout
                     format: int32
@@ -878,6 +884,9 @@ spec:
                   defaultSignatureAlgorithm:
                     description: DefaultSignatureAlgorithm
                     type: string
+                  directGrantFlow:
+                    description: DirectGrantFlow
+                    type: string
                   displayName:
                     description: Realm display name.
                     type: string
@@ -1024,9 +1033,15 @@ spec:
                   registrationEmailAsUsername:
                     description: Email as username
                     type: boolean
+                  registrationFlow:
+                    description: RegistrationFlow
+                    type: string
                   rememberMe:
                     description: Remember me
                     type: boolean
+                  resetCredentialsFlow:
+                    description: ResetCredentialsFlow
+                    type: string
                   resetPasswordAllowed:
                     description: Forgot password
                     type: boolean
@@ -1354,6 +1369,9 @@ spec:
                   type: object
                 type: array
                 x-kubernetes-list-type: atomic
+              suspend:
+                description: Suspend reconciliation
+                type: boolean
               unmanaged:
                 description: When set to true, this KeycloakRealm will be marked as
                   unmanaged and not be managed by this operator. It can then be used

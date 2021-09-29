@@ -804,6 +804,9 @@ spec:
                       type: object
                     type: array
                 type: object
+              suspend:
+                description: Suspend reconciliation
+                type: boolean
             required:
             - client
             - realmSelector

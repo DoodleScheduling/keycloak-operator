@@ -8,7 +8,6 @@ import (
 	"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	"github.com/keycloak/keycloak-operator/pkg/common"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
@@ -63,15 +62,6 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 		return err
 	}
 
-	// Make sure to watch the credential secrets
-	err = c.Watch(&source.Kind{Type: &corev1.Secret{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &kc.KeycloakIdentityProvider{},
-	})
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -109,7 +99,15 @@ func (r *ReconcileKeycloakIdentityProvider) Reconcile(request reconcile.Request)
 		return reconcile.Result{}, err
 	}
 
-	// The client may be applicable to multiple keycloak instances,
+	// Abort reconciliation earily if resource is suspended
+	if instance.Spec.Suspend == true {
+		instance.Status.Ready = false
+		instance.Status.Message = ""
+		instance.Status.Phase = v1alpha1.PhaseSuspended
+		return reconcile.Result{}, nil
+	}
+
+	// The identity provider may be applicable to multiple keycloak instances,
 	// process all of them
 	realms, err := common.GetMatchingRealms(r.context, r.client, instance.Spec.RealmSelector)
 	if err != nil {

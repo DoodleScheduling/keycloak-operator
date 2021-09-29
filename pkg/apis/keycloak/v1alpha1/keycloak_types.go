@@ -244,6 +244,7 @@ var (
 	PhaseReconciling  StatusPhase = "reconciling"
 	PhaseFailing      StatusPhase = "failing"
 	PhaseInitialising StatusPhase = "initialising"
+	PhaseSuspended    StatusPhase = "suspended"
 )
 
 // Keycloak is the Schema for the keycloaks API.
